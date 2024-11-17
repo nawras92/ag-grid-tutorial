@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ar" dir="ltr">
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <style>
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+      }
+      .green {
+        background: green;
+        color: white;
+      }
+      .red {
+        background: red;
+        color: white;
+      }
+      .orange {
+        background: orange;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <button id="customBtn">Get Selected</button>
+      <button id="addRow">Add Row</button>
+      <button id="deleteRows">delete Rows</button>
+      <div id="myGrid" class="ag-theme-alpine" style="height: 300px"></div>
+    </div>
+
+    <script>
+      const gridOptions = {
+        rowData: [
+          {
+            description: '',
+            rating: 80,
+            date: '2022-11-17T08:00:00Z',
+            price: '100',
+            currency: 'Euros',
+            title: '1984',
+            author: 'جورج أورويل',
+            year: 1949,
+            available: true,
+            image:
+              'https://www.pixelstalk.net/wp-content/uploads/2016/09/Best-Beautiful-Images-For-Desktop-Nature.png',
+            fullName: {
+              firstName: 'George',
+              lastName: 'orwell',
+            },
+          },
+          {
+            description: '',
+            rating: 100,
+            date: '2024-08-17T08:00:00Z',
+            price: 50,
+            currency: 'USD',
+            title: 'الغيتا: أغنية كريشنا',
+            author: 'مترجم مجهول',
+            year: -300,
+            available: true,
+            image: 'https://mcdn.wallpapersafari.com/medium/75/57/6WLKOD.jpg',
+            fullName: {
+              firstName: 'Krishna',
+              lastName: 'Krishna',
+            },
+          },
+          {
+            description: '',
+            rating: 45,
+            date: '2027-09-07T08:00:00Z',
+            price: 2,
+
+            currency: 'JOD',
+            title: 'البؤساء',
+            author: 'فيكتور هوغو',
+            year: 1862,
+            available: false,
+            image: 'https://mcdn.wallpapersafari.com/medium/79/15/6sRwB7.jpg',
+            fullName: {
+              firstName: 'Victor',
+              lastName: 'Hugo',
+            },
+          },
+          {
+            description: '',
+            rating: 50,
+            date: '2025-11-17T12:15:00Z',
+            price: 20,
+            currency: 'USD',
+            title: 'مئة عام من العزلة',
+            author: 'غابرييل غارسيا ماركيز',
+            year: 1967,
+            available: true,
+            image:
+              'https://wallup.net/wp-content/uploads/2016/03/10/319576-photography-landscape-nature-water-grass-trees-plants-sunrise-lake.jpg',
+            fullName: {
+              firstName: 'Gab',
+              lastName: 'Markez',
+            },
+          },
+        ],
+        // تعريف الأعمدة
+        columnDefs: [
+          {
+            field: 'title',
+            headerName: 'عنوان الكتاب',
+            sortable: false,
+            filter: false,
+            editable: true,
+            cellEditor: 'agTextCellEditor',
+            cellEditorParams: {
+              maxLength: 6,
+            },
+          },
+          {
+            field: 'description',
+            editable: true,
+            cellEditor: 'agLargeTextCellEditor',
+            cellEditorParams: {
+              maxLength: 6,
+              rows: 10,
+              cols: 50,
+            },
+          },
+          {
+            field: 'author',
+            headerName: 'المؤلف',
+            sortable: true,
+            filter: true,
+          },
+          {
+            field: 'year',
+            headerName: 'سنة النشر',
+            sortable: true,
+            filter: 'agNumberColumnFilter',
+          },
+          {
+            field: 'available',
+            headerName: 'متوفر',
+            editable: true,
+            cellEditor: 'agCheckboxCellEditor',
+            cellRender: 'agCheckboxCellRenderer',
+          },
+          {
+            field: 'image',
+            headerName: 'Nice Image',
+            cellRenderer: (params) => {
+              if (params.value) {
+                return `<img src="${params.value}" alt="image thumb" style="width:50px;
+                height: 50px; border-radius: 50%">`;
+              }
+              return '';
+            },
+          },
+          {
+            field: 'fullName',
+            headerName: 'Full Name',
+            cellRenderer: (params) =>
+              params?.value?.firstName + ' ' + params?.value?.lastName,
+          },
+          {
+            field: 'formattedPrice',
+            headerName: 'Price',
+            valueGetter: (params) => {
+              return params.data.price + ' ' + params.data.currency;
+            },
+          },
+          {
+            field: 'date',
+            headerName: 'Update Date',
+            editable: true,
+            cellEditor: 'agDateCellEditor',
+            valueFormatter: (params) => {
+              const date = new Date(params.value);
+              const formattedDate = date.toLocaleString('ar-JO', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              });
+              return formattedDate;
+            },
+          },
+          {
+            field: 'rating',
+            headerName: 'Rating',
+            editable: true,
+            cellEditor: 'agNumberCellEditor',
+            cellEditorParams: {
+              min: 0,
+              max: 100,
+            },
+            cellClassRules: {
+              green: (params) => params.value >= 80,
+              red: (params) => params.value <= 45,
+              orange: (params) => params.value > 45 && params.value < 80,
+            },
+          },
+        ],
+        enableRtl: true,
+        rowHeight: 60,
+        rowSelection: {
+          mode: 'multiRow',
+        },
+        rowClassRules: {
+          red: (params) => params.data.available === false,
+        },
+        //     pagination: true,
+        //    paginationPageSize: 1,
+      };
+      const myGridElement = document.querySelector('#myGrid');
+      const gridApi = agGrid.createGrid(myGridElement, gridOptions);
+
+      console.log(gridApi);
+      ///*** get Selected
+      const btn = document.getElementById('customBtn');
+      btn.addEventListener('click', customFunction);
+      function customFunction() {
+        const selectedRows = gridApi.getSelectedRows();
+        console.log(selectedRows);
+      }
+
+      //*** Add Row
+      const addBtn = document.getElementById('addRow');
+      addBtn.addEventListener('click', addRowFunc);
+      function addRowFunc() {
+        const newRow = {
+          title: 'new book',
+          author: 'new ',
+        };
+        gridApi.applyTransaction({
+          add: [newRow],
+        });
+      }
+      //*** Delete Rows
+      const deleteBtn = document.getElementById('deleteRows');
+      deleteBtn.addEventListener('click', deleteRowsFunc);
+      function deleteRowsFunc() {
+        const selectedRows = gridApi.getSelectedRows();
+        gridApi.applyTransaction({
+          remove: selectedRows,
+        });
+      }
+    </script>
+  </body>
+</html>

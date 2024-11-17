@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ar" dir="ltr">
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <style>
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="myGrid" class="ag-theme-alpine" style="height: 300px"></div>
+    </div>
+
+    <script>
+      const gridOptions = {
+        rowData: [
+          { title: '1984', author: 'جورج أورويل', year: 1949, available: true },
+          {
+            title: 'الغيتا: أغنية كريشنا',
+            author: 'مترجم مجهول',
+            year: -300,
+            available: true,
+          },
+          {
+            title: 'البؤساء',
+            author: 'فيكتور هوغو',
+            year: 1862,
+            available: false,
+          },
+          {
+            title: 'مئة عام من العزلة',
+            author: 'غابرييل غارسيا ماركيز',
+            year: 1967,
+            available: true,
+          },
+        ],
+        // تعريف الأعمدة
+        columnDefs: [
+          {
+            field: 'title',
+            headerName: 'عنوان الكتاب',
+            sortable: false,
+            filter: false,
+          },
+          {
+            field: 'author',
+            headerName: 'المؤلف',
+            sortable: true,
+            filter: true,
+          },
+          {
+            field: 'year',
+            headerName: 'سنة النشر',
+            sortable: true,
+            filter: 'agNumberColumnFilter',
+          },
+          {
+            field: 'available',
+            headerName: 'متوفر',
+            cellRenderer: (params) => {
+              return params.value ? '✅ متاح' : '❌ غير متاح';
+            },
+          },
+        ],
+        enableRtl: true,
+        rowHeight: 40,
+        //     pagination: true,
+        //    paginationPageSize: 1,
+      };
+      const myGridElement = document.querySelector('#myGrid');
+      agGrid.createGrid(myGridElement, gridOptions);
+    </script>
+  </body>
+</html>
